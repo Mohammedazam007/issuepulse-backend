@@ -1,25 +1,19 @@
-# Use official Java 17 image
-FROM eclipse-temurin:17-jdk-alpine
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml first (for caching)
-COPY mvnw .
-COPY .mvn .mvn
 COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests
 
-# Copy source code
-COPY src src
+FROM eclipse-temurin:17-jdk-alpine
 
-# Build the app
-RUN ./mvnw package -DskipTests
+WORKDIR /app
 
-# Run the jar
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
-CMD ["java", "-jar", "target/*.jar"]
 
-
+CMD ["java", "-jar", "app.jar"]

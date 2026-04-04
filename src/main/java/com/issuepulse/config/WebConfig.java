@@ -23,10 +23,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
             .addResourceLocations("file:" + uploadDir + "/");
     }
-    @Override
+  @Override
 public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
-            .allowedOrigins("https://issuepulse-frontend.vercel.app")
+            .allowedOrigins(
+                "https://issuepulse-frontend.vercel.app"
+            )
             .allowedMethods("*")
             .allowedHeaders("*");
 }
